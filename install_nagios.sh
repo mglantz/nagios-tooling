@@ -21,7 +21,7 @@ echo "Starting installation."
 echo
 
 echo "Disabling SELinux"
-setenforce 0
+seenforce 0
 
 echo "Registering server to proper Satellite channels."
 subscription-manager register --org="Red_Hat_Nordics" --activationkey="Nagios-server" --force
@@ -83,4 +83,14 @@ SELINUX=disabled
 SELINUXTYPE=targeted 
 EOF
 
-echo "Installation complete."
+echo "Cloning git repo"
+git config --global http.sslVerify false
+mkdir /root/nagiostmp
+cd /root/nagiostmp
+git clone https://gitlab.labrats.se/mglantz/nagios.git
+cd nagios
+sh /root/nagiostmp/nagios/tools/git_sync.sh
+
+echo "* * * * * /usr/local/bin/git_sync.sh" >>/var/spool/cron/root
+
+echo "Installation complete"
